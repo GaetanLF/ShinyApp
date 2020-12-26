@@ -7,12 +7,23 @@
 #############################################
 
 #library(shiny)
-#library(rsconnect)
+library(rsconnect)
 library(FactoMineR)
 
 #############################################
 #      Firstly we load dataframes.          #
 #############################################
+
+# Dataframe from the first exercise
+pathfile="bdf.csv"
+data <- read.csv(pathfile,sep=":",header=T)
+data2 = data[,c("COEF","DOMTRAV","TYPMEN2","CC","REVTOT","DIPLOPR","DIPLOCJ")]
+dataINSEE = data2[complete.cases(data2),]
+dataINSEE$DOMTRAV = factor(dataINSEE$DOMTRAV)
+dataINSEE$TYPMEN2 = factor(dataINSEE$TYPMEN2)
+dataINSEE$CC = factor(dataINSEE$CC)
+dataINSEE$DIPLOPR = factor(dataINSEE$DIPLOPR)
+dataINSEE$DIPLOCJ = factor(dataINSEE$DIPLOCJ)
 
 # Dataframe from the second exercise
 pathfile="villes.txt"
@@ -75,38 +86,38 @@ tabsetPanel(
                           selected = colnames(dataVilles)[1:12][1],
                           inline=T)),
            
-           mainPanel(align="right",fluidRow(
+           mainPanel(align="center",fluidRow(
              column(6,plotOutput(outputId="PCAVar")),
-             column(6,plotOutput(outputId = "PCAind"))
-           )),
-           
-           h3("Question 1"),
-           p("Ici, le plan factoriel explique 98.81% de l'inertie. Ainsi, les deux dimensions sont largement suffisantes pour une
-             analyse cohérente vu qu'elle contiennent la quasi-totalité de l'information."),
-           h3("Question 2"),
-           p("Tout d'abord, sur le cercle des corrélations, les corrélations sont positives et plutôt élevées, (comprises entre 0.6 et 0.9).
+             column(6,plotOutput(outputId = "PCAind")),
+             column(12,h3("Question 1")),
+             column(12,p("Ici, le plan factoriel explique 98.81% de l'inertie. Ainsi, les deux dimensions sont largement suffisantes pour une
+             analyse cohérente vu qu'elle contiennent la quasi-totalité de l'information.")),
+             column(12,h3("Question 2")),
+             column(12,p("Tout d'abord, sur le cercle des corrélations, les corrélations sont positives et plutôt élevées, (comprises entre 0.6 et 0.9).
              Nous devinons que l'axe 1 séparera les villes froides (vers la gauche de l’axe), et les villes chaudes (vers la droite de l’axe) 
              les villes à gauches de l'axe 1 (avec de faibles coordonnées) auront des températures faibles au mois de mars. Celles vers le 
              centre de l'axe auront des températures moyennes en mars, et celles vers la droite auront des températures élevées au mois de mars. 
              Attention, il s'agira bien de températures relatives aux autres villes : quand on dit que la température d'une ville est faible, 
-             c'est à dire qu'elle est faible comparativement aux autres villes."),
-           p("Pour l'axe 2, les corrélations du cercle de corrélations alternent entre approximativement -0.5 et +0.6.
+             c'est à dire qu'elle est faible comparativement aux autres villes.")),
+             column(12,p("Pour l'axe 2, les corrélations du cercle de corrélations alternent entre approximativement -0.5 et +0.6.
               Nous devinons que cet axe concernera plutôt l’amplitude thermique au long de l’année : On en haut du graphique les villes 
-              où il fait chaud l’hiver et froid l’été, et en bas du graphique les villes où il fait chaud l’été et froid l’hiver. Notons 
-              encore une fois qu’il s’agira bien de températures relatives aux autres villes. Ainsi, en haut du graphique l’amplitude thermique des 
-              villes concernée sera faible, alors qu’en bas du graphique elle sera élevée."),
-           h3("Question 3"),
-           p("Il s’agit de la meilleure représentation possible des individus avec notre jeu de données (98% d’inertie). Les individus « villes » sont
-             bien représentés sur le premier plan factoriels car ils sont couchés sur le premier axe factoriel qui discrimine au mieux les observation"),
-           h3("Question 4"),
-           p("Strasbourg et Lille semblent complètement opposés à Nice et Marseille sur le premier axe, leur températures moyennes sont très différentes tout au long de l’année. En effet, comme dit précédemment, l’axe 1 concerne les différences de températures.
-              Il fera plutôt chaud tout au long de l’année à Nice et Marseille, alors qu’il fera plutôt froid à Lille et Strasbourg."),
-           p("Nous pouvons confirmer cette opposition en étudiant l’évolution de leurs températures selon les mois de l’année :
+                         où il fait chaud l’hiver et froid l’été, et en bas du graphique les villes où il fait chaud l’été et froid l’hiver. Notons 
+                         encore une fois qu’il s’agira bien de températures relatives aux autres villes. Ainsi, en haut du graphique l’amplitude thermique des 
+                         villes concernée sera faible, alors qu’en bas du graphique elle sera élevée.")),
+             column(12,h3("Question 3")),
+             column(12,p("Il s’agit de la meilleure représentation possible des individus avec notre jeu de données (98% d’inertie). Les individus « villes » sont
+             bien représentés sur le premier plan factoriels car ils sont couchés sur le premier axe factoriel qui discrimine au mieux les observations.")),
+             column(12,h3("Question 4")),
+             column(12,p("Strasbourg et Lille semblent complètement opposés à Nice et Marseille sur le premier axe, leur températures moyennes sont très différentes tout au long de l’année. En effet, comme dit précédemment, l’axe 1 concerne les différences de températures.
+              Il fera plutôt chaud tout au long de l’année à Nice et Marseille, alors qu’il fera plutôt froid à Lille et Strasbourg.")),
+             column(12,p("Nous pouvons confirmer cette opposition en étudiant l’évolution de leurs températures selon les mois de l’année :
               Nous pouvons modifier l’habillage du graphique des individus pour nous donner une idée du comportement de la température en Janvier (pour représenter l’hiver) et en Juillet pour représenter l’été.
-             On conclut que Lille et Strasbourg s’opposent bien totalement à Montpellier et Marseille qui restent toujours chaudes tout au long de l’année (relativement aux autres villes). "),
-           h3("Question 5"),
-           p("Brest, Rennes et Nantes sont assez similaire comme vu dans les graphiques précédents : leurs températures sont très variables avec la saison (été ou hiver) : Il fera, relativement aux autres villes,  chaud en hiver et froid en été.
-             On peut les opposer à Vichy Clermont, paris et Grenoble où il fera relativement plus chaud en été qu’en hiver."),
+                         On conclut que Lille et Strasbourg s’opposent bien totalement à Montpellier et Marseille qui restent toujours chaudes tout au long de l’année (relativement aux autres villes).")),
+             column(12,h3("Question 5")),
+             column(12,p("Brest, Rennes et Nantes sont assez similaire comme vu dans les graphiques précédents : leurs températures sont très variables avec la saison (été ou hiver) : Il fera, relativement aux autres villes,  chaud en hiver et froid en été.
+             On peut les opposer à Vichy Clermont, paris et Grenoble où il fera relativement plus chaud en été qu’en hiver."))
+           )),
+           
            
            h2("Partie II : le clustering"),
            
