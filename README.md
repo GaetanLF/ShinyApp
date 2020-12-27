@@ -9,4 +9,4 @@ Just download all the repository and launch 'app.R' on your R Terminal, it will 
 
 ### Inquiries
 
-For any inquiry about this project, feel free to contact me at : gaetan.le-floch@etu.univ-paris1.fr
+For any inquiry about this project, feel free to contact me at : gaetan.le-floch@etu.univ-paris1.fr.
