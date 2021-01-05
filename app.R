@@ -270,7 +270,7 @@ server <- function(input,output) {
   
   Ex1RegLog <- function(){ # Performs the logistic regression.
     vname = input$RegLog
-    mod = glm(formula = DOMTRAV~.,data=trainData[,vname],family="binomial" )
+    mod = glm(formula = trainData$DOMTRAV~.,data=trainData[,vname],family="binomial" )
     logit.coeffs <- data.frame(ID=rep(1:length(mod$coefficients)))
     logit.coeffs$Coefficients <- mod$coefficients
     logit.coeffs$Prob <- exp(logit.coeffs$Coefficients)/(1+exp(logit.coeffs$Coefficients))
