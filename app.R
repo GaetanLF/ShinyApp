@@ -15,6 +15,7 @@ library(FactoMineR)
 #############################################
 
 # Dataframe from the first exercise
+
 pathfile="bdf.csv"
 data <- read.csv(pathfile,sep=":",header=T)
 data2 = data[,c("COEF","DOMTRAV","TYPMEN2","CC","REVTOT","DIPLOPR","DIPLOCJ")]
@@ -24,12 +25,19 @@ dataINSEE$TYPMEN2 = factor(dataINSEE$TYPMEN2)
 dataINSEE$CC = factor(dataINSEE$CC)
 dataINSEE$DIPLOPR = factor(dataINSEE$DIPLOPR)
 dataINSEE$DIPLOCJ = factor(dataINSEE$DIPLOCJ)
+dataINSEE$COEF = dataINSEE$COEF*1000 # Retraitement du coefficient de pondération.
+dataINSEE = dataINSEE[rep(row.names(dataINSEE),dataINSEE$COEF),2:ncol(dataINSEE)]
+lim = round(nrow(dataINSEE)*0.8,0)
+trainData <- dataINSEE[1:lim,]
+testData <- dataINSEE[(lim+1):nrow(dataINSEE),]
 
 # Dataframe from the second exercise
+
 pathfile="villes.txt"
 dataVilles <- read.table(pathfile,header=T)
 
 # Dataframe from the third exercise
+
 pathfile = "universite.csv"
 dataUniv <- read.table(pathfile,header=T,sep=";")
 rownames(dataUniv) = dataUniv$X
@@ -67,15 +75,36 @@ tabsetPanel(
              utilisez le fichier brut disponible sur Github. Vous ne devriez pas avoir ce problème si vous accédez à l'application par
              shinyapps.io."),
            p(div(HTML("En cas de besoin, vous pouvez accéder au <a href='https://github.com/GaetanLF/ShinyApp' target='_blank'
-                      >répertoire Github</a> ou au <a href='#' target='_blank'>rapport édité dans le cadre du contrôle</a>, qui
-                      contient des informations non disponibles sur cette application."))),
+                      >répertoire Github</a>."))),
+           p("Enfin, veuillez noter que cette application est à but purement illustratif : ici, vous ne retrouverez pas nécessairement les
+             détails techniques qui nous ont fait choisir un modèle ou un paramètre particulier."),
            p("Nous vous souhaitons une bonne exploration !")),
   
-  tabPanel("Exercice 1",
-           titlePanel("Exercice 1 : le recours aux employés de maison")),
+  tabPanel("Exercice 1", # First exercise.
+           titlePanel("Exercice 1 : le recours aux employés de maison"),
+           
+           mainPanel(
+           
+           fluidRow(column(12,p("Pour cet exercice, nous vous proposons d'étudier la régression logistique mise en
+                                          place pour évaluer les critères d'emploi d'un employé de maison. Visualisons les 
+                                probabilités conditionnelles selon le nombre de variables incluses dans le modèle."))),
+           fluidRow(column(12,p(div(HTML("<b>Attention, le graphique peut mettre beaucoup de temps à s'afficher.</b>"))))),
+                     
+                     fluidRow(align="center",
+                       column(12,wellPanel(
+                         checkboxGroupInput(inputId="RegLog",
+                                            label="Indiquez les variables à prendre en compte.",
+                                            choices=colnames(trainData)[2:ncol(trainData)],
+                                            selected=colnames(trainData)[2:ncol(trainData)],
+                                            inline=T
+                                            )))), # End of wellPanel's row containing the input.
+           
+           fluidRow(column(12,plotOutput(outputId = "ProC")))
+           
+           )), # End tabPanel from Exercice 1
   
   tabPanel("Exercice 2",
-           titlePanel("Exercice 2 : pluviométrie dans les villes françaises"),
+           titlePanel("Exercice 2 : températures dans les villes françaises"),
            
            
            
@@ -147,7 +176,7 @@ tabsetPanel(
              column(12,p("Le dendogramme semble confirmer notre intuition avec les k-means : nous avons un cluster pour les villes du Sud, un cluster pour les villes du 
                          littoral breton et un dernier pour les villes soumises à un climat plus continental."))
              
-           )), # Close fluidrow and Mainpanel from exercise 2
+           )) # Close fluidrow and Mainpanel from exercise 2
   
         ), # Close Tabpanel from exercise 2
 
@@ -162,47 +191,47 @@ tabsetPanel(
                                                  selected=colnames(dataUniv)[7:12],
                                                  inline=T,
                                                  choiceNames = colnames(dataUniv), # Asks the user for supplementary variables
-                                                 choiceValues = 1:ncol(dataUniv)))), # End of wellPanel
+                                                 choiceValues = 1:ncol(dataUniv))))), # End of wellPanel
                               
                               
-                        column(12,plotOutput(outputId = "ACGraph")), # Plots the 2D corresponding analysis.
+                        fluidRow(column(12,plotOutput(outputId = "ACGraph"))), # Plots the 2D corresponding analysis.
                         
                         
-                        column(12,tableOutput(outputId = "cos21")), # Shows cos2 from the 2D factorial plan
-                        column(12,tableOutput(outputId = "cos22")),
-                        column(12,h3("Question 1")),
-                        column(12,p("Ici, le plan factoriel explique 86.23% de l'inertie. Ainsi, les deux dimensions du plan contiennent la grande majorité
-                          de l'information.")),
-                        column(12,h3("Question 2")),
-                              column(12,p("Les études de lettres et de langues sont bien représentées, de même que les femmes en licence. Pour les masters et les doctorats,
+                        fluidRow(column(12,tableOutput(outputId = "cos21"))), # Shows cos2 from the 2D factorial plan
+                        fluidRow(column(12,tableOutput(outputId = "cos22"))),
+                        fluidRow(column(12,h3("Question 1"))),
+                        fluidRow(column(12,p("Ici, le plan factoriel explique 86.23% de l'inertie. Ainsi, les deux dimensions du plan contiennent la grande majorité
+                          de l'information."))),
+                        fluidRow(column(12,h3("Question 2"))),
+                        fluidRow(column(12,p("Les études de lettres et de langues sont bien représentées, de même que les femmes en licence. Pour les masters et les doctorats,
                                 c'est un peu plus compliqué. Globalement, les points représentant les femmes et les études de langues sont assez proches.
-                                Nous pouvons raisonnablement penser que les femmes sont plus attirées par les études de lettres, au moins en licence.")),
-                        column(12,h3("Question 3")),
-                        column(12,p("Au total, les hommes sont très bien représentés sur le plan factoriel. Il en est de même pour chaque niveau de diplôme où les cos2
+                                Nous pouvons raisonnablement penser que les femmes sont plus attirées par les études de lettres, au moins en licence."))),
+                        fluidRow(column(12,h3("Question 3"))),
+                        fluidRow(column(12,p("Au total, les hommes sont très bien représentés sur le plan factoriel. Il en est de même pour chaque niveau de diplôme où les cos2
                                 ne sont jamais en-dessous de 60%. Au niveau des sciences, seules les sciences humaines et les sciences fondamentales sont bien
-                                représentées ; les sciences économiques le sont aussi un peu dans une certaine mesuree, mais la SVT est mal représentée.")),
-                        column(12,p("Sur la comparaison Hommes/Sciences, ils sont très proches des sciences fondamentales et, dans une certaine mesure, des sciences
+                                représentées ; les sciences économiques le sont aussi un peu dans une certaine mesuree, mais la SVT est mal représentée."))),
+                        fluidRow(column(12,p("Sur la comparaison Hommes/Sciences, ils sont très proches des sciences fondamentales et, dans une certaine mesure, des sciences
                                 économiques (même si rappelons-le les sciences éco ne sont pas très bien représentées). Nous pouvons affirmer que les hommes sont
                                 attirés, surtout au niveau master, par les sciences fondamentales. Par ailleurs, les hommes sont très éloignés de STAPS, mais tout
-                                de même plus proches que les femmes.")),
-                        column(12,h3("Question 4")),
-                        column(12,p("Le plan factoriel représente extrêmement bien les études d'AES (les cos2 sont presque égaux à 1 en les additionnant). Les licences
+                                de même plus proches que les femmes."))),
+                        fluidRow(column(12,h3("Question 4"))),
+                        fluidRow(column(12,p("Le plan factoriel représente extrêmement bien les études d'AES (les cos2 sont presque égaux à 1 en les additionnant). Les licences
                                 sont assez proches d'AES et extrêmement bien représentées aussi. Les masters dans leur ensemble sont bien représentés, tout comme
-                                les doctorats, et ils sont tous les deux très éloignés de AES. Nous pouvons affirmer que ces études sont plutôt courtes.")),
-                        column(12,h3("Question 5")),
-                        column(12,p("Le premier axe, de la dimension 1, pourrait séparer les études littéraires des études scientifiques : le point le plus à gauche
+                                les doctorats, et ils sont tous les deux très éloignés de AES. Nous pouvons affirmer que ces études sont plutôt courtes."))),
+                        fluidRow(column(12,h3("Question 5"))),
+                        fluidRow(column(12,p("Le premier axe, de la dimension 1, pourrait séparer les études littéraires des études scientifiques : le point le plus à gauche
                                 représente les études de langues et le point le plus à droite représente les sciences fondamentales. Le deuxième axe, lui,
                                 pourrait séparer les études plutôt longues de celles plutôt courtes, comme en témoigne essentiellement le placement des points
-                                Licence, Master et Doctorat sur le plan factoriel.")),
-                        column(12,h3("Question 6")),
-                        column(12,p("On ne peut pas penser grand chose de la proximité entre ces deux points : les femmes en master sont mal représentées (~0.47)
+                                Licence, Master et Doctorat sur le plan factoriel."))),
+                        fluidRow(column(12,h3("Question 6"))),
+                        fluidRow(column(12,p("On ne peut pas penser grand chose de la proximité entre ces deux points : les femmes en master sont mal représentées (~0.47)
                                 et les études de SVT également (~0.42) : ces points ne sont pas interprétables et nous ne pouvons conclure à une supposée 
-                                proximité.")),
-                        column(12,h3("Question 7")),
-                        column(12,p("Lettres et arts sont extrêmement bien représentées (~0.91) et les femmes en licence également (~0.97). Il y a une très forte
-                                proximité entre ces deux catégories."))
+                                proximité."))),
+                        fluidRow(column(12,h3("Question 7"))),
+                        fluidRow(column(12,p("Lettres et arts sont extrêmement bien représentées (~0.91) et les femmes en licence également (~0.97). Il y a une très forte
+                                proximité entre ces deux catégories.")))
                         
-            )) # Close mainPanel from exercise 3
+            ) # Close mainPanel from exercise 3
   
            
   ) # End of exercise 3
@@ -238,6 +267,24 @@ server <- function(input,output) {
     Km = kmeans(dataVilles,Ngroup)
     return(Km)
   }
+  
+  Ex1RegLog <- function(){ # Performs the logistic regression.
+    vname = input$RegLog
+    mod = glm(formula = DOMTRAV~.,data=trainData[,vname],family="binomial" )
+    logit.coeffs <- data.frame(ID=rep(1:length(mod$coefficients)))
+    logit.coeffs$Coefficients <- mod$coefficients
+    logit.coeffs$Prob <- exp(logit.coeffs$Coefficients)/(1+exp(logit.coeffs$Coefficients))
+    return(logit.coeffs)
+  }
+  
+  output$ProC <- renderPlot({
+    logit.coeffs = Ex1RegLog()
+    attach(logit.coeffs)
+    plot(ID[2:length(logit.coeffs$ID)],Prob[2:length(logit.coeffs$Prob)],
+         xlab="Identifiant de la variable",ylab="Probabilité conditionnelle",
+         main="Probabilités conditionnelles",ylim=c(0,1))
+    detach(logit.coeffs)
+  })
   
   output$ACGraph <- renderPlot({ 
     req(Ex3CA()) # Requests the function Ex3PCA in order to make the graph sent to the ACGraph component in ui.
