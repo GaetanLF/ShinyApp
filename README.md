@@ -5,7 +5,7 @@ We have made this straightforward Shiny app in order to analyse data from three 
 
 ### How to make it work ?
 
-Just download all the repository and launch 'app.R' on your R Terminal, it will be sufficient.
+Just download all the repository and launch 'app.R' on your R Terminal, it will be sufficient. This app used to be hosted on shinyapps.io, but we've decided to archive it.
 
 ### Inquiries
 
