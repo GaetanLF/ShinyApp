@@ -333,8 +333,6 @@ server <- function(input,output) {
 
 } # End of server component
   
-# https://vimeo.com/rstudioinc/review/131218530/212d8a5a7a/#t=51m
-  
 #############################################
 #    We make the link between the user      #
 #   interface and the server.That's the     #
